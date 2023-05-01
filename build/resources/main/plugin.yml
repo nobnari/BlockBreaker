@@ -1,0 +1,8 @@
+name: BlockBreaker
+version: '1.0-SNAPSHOT'
+main: plugin.blockbreaker.BlockBreaker
+api-version: 1.19
+commands:
+  bbstart:
+  bbretire:
+  bbrecord:
