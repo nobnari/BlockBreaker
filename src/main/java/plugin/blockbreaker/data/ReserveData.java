@@ -17,20 +17,20 @@ public class ReserveData {
   Course selectedCourse;
   GameMode gameMode;
   GameArea ga;
-  List<Material> lastBlocks;
+  List<Material> MemorizeBlocks;
 
   public ReserveData(Player player, Course course) {
     this.player = player;
     this.selectedCourse = course;
     this.gameMode = player.getGameMode();
     this.ga = new GameArea(player);
-    this.lastBlocks = LastBlocks(ga);
+    this.MemorizeBlocks = MemoryBlocks(ga);
   }
 
   /**
    * lsからlgまでの範囲のブロックをリストに取得するメソッド
    */
-  public List<Material> LastBlocks(GameArea ga) {
+  public List<Material> MemoryBlocks(GameArea ga) {
     List<Material> lastBlocks = new ArrayList<>();
     Location ls = ga.getLs();
     int x = ga.getX();

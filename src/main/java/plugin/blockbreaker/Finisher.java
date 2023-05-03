@@ -23,7 +23,7 @@ public class Finisher {
    */
   public void blockReset(Player player) {
     GameArea ga = meta.getReserveData().get(player.getName()).getGa();
-    List<Material> lastBlocks = meta.getReserveData().get(player.getName()).getLastBlocks();
+    List<Material> lastBlocks = meta.getReserveData().get(player.getName()).getMemorizeBlocks();
     Location ls = ga.getLs();
     int x = ga.getX();
     int y = ga.getY();

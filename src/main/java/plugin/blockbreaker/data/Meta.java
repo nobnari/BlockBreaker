@@ -1,8 +1,6 @@
 package plugin.blockbreaker.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,10 +21,5 @@ public class Meta {
    * プレイヤーごとのBBのプレイ中データを管理するマップ
    */
   private Map<String, OnPlayData> onPlayData = new HashMap<>();
-  /**
-   * 出現ブロックごとのブロックデータを管理するリスト
-   */
-  private List<BlockStatus> blockStatus = new ArrayList<>();
-
 
 }

@@ -15,8 +15,9 @@ public class GameArea {
   Location ls;
   Location lg;
   int X = 6;
-  int Y = 7;
+  int Y = 10;
   int Z = 5;
+  int ZC = 3;
 
   /**
    * 以下コンストラクタ
@@ -28,21 +29,35 @@ public class GameArea {
     Location l = player.getLocation();
     Vector vec = l.getDirection().multiply(5);
     Location l0 = new Location(w, l.getX() + vec.getX(), l.getY(), l.getZ() + vec.getZ());
-    this.ls = (new Location(w, l0.getX() - 2, l0.getY(), l0.getZ() - 1));
-    this.lg = (new Location(w, ls.getX() + X - 1, ls.getY() + Y - 1, ls.getZ() + Z - 1));
+    this.ls = (new Location(w, (int) l0.getX() - 2, (int) l0.getY(), (int) l0.getZ() - 1));
+    this.lg = (new Location(w, (int) ls.getX() + X - 1, (int) ls.getY() + Y - 1,
+        (int) ls.getZ() + Z - 1));
   }
 
+//  /**
+//   * このエリアにブロックが含まれるか検出するメソッド
+//   *
+//   * @param block 検出するブロックの座標
+//   */
+//  public boolean checkGameArea(Block block) {
+//    Location l = block.getLocation();
+//    return ls.getX() <= l.getX() && l.getX() <= lg.getX()
+//        && ls.getY() <= l.getY() && l.getY() <= lg.getY()
+//        && ls.getZ() <= l.getZ() && l.getZ() <= lg.getZ();
+//  }
+//
 
   /**
-   * このエリアにブロックが含まれるか検出するメソッド
+   * このモノリススペースエリアにブロックが含まれるか検出するメソッド
    *
    * @param block 検出するブロックの座標
    */
-  public boolean containsBlock(Block block) {
+  public boolean checkMonolithSpace(Block block) {
     Location l = block.getLocation();
-    return ls.getX() <= l.getX() && l.getX() <= lg.getX()
-        && ls.getY() <= l.getY() && l.getY() <= lg.getY()
-        && ls.getZ() <= l.getZ() && l.getZ() <= lg.getZ();
+    return ls.getX() + 1 <= l.getX() && l.getX() <= lg.getX() - 1
+        && ls.getY() <= l.getY() && l.getY() <= lg.getY() - 1
+        && l.getZ() == ls.getZ() + ZC;
+
   }
 
 }

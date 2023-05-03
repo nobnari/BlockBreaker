@@ -5,12 +5,12 @@ import org.bukkit.entity.Player;
 import plugin.blockbreaker.Finisher;
 import plugin.blockbreaker.data.Meta;
 
-public class BBRetire extends SuperCommand {
+public class MMRetire extends SuperCommand {
 
   private final Meta meta;
   Finisher fini;
 
-  public BBRetire(Meta meta, Finisher fini) {
+  public MMRetire(Meta meta, Finisher fini) {
     this.meta = meta;
     this.fini = fini;
   }

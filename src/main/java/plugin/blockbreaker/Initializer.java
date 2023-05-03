@@ -27,7 +27,7 @@ public class Initializer {
     int y = ga.getY();
     int z = ga.getZ();
     for (int i = 0; i < x; i++) {
-      for (int j = 0; j < y - 1; j++) {
+      for (int j = 0; j < y - 2; j++) {
         for (int k = 0; k < z; k++) {
           Location l = new Location(ls.getWorld(), ls.getX() + i, ls.getY() + j, ls.getZ() + k);
           l.getBlock().setType(Material.AIR);
@@ -51,9 +51,8 @@ public class Initializer {
   public void monolithSetter(Course course, GameArea ga) {
     Location ls = ga.getLs();
     int x = ga.getX();
-    int y = ga.getY();
-    int z = ga.getZ();
-    int zc = z / 2 + 1;
+    int y = ga.getY() - 4;
+    int zc = ga.getZC();
     for (int i = 1; i < x - 1; i++) {
       for (int j = 0; j < y - 1; j++) {
         Location l = new Location(ls.getWorld(), ls.getX() + i, ls.getY() + j,

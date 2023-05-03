@@ -3,6 +3,6 @@ version: '${version}'
 main: plugin.blockbreaker.BlockBreaker
 api-version: 1.19
 commands:
-  bbstart:
-  bbretire:
-  bbrecord:
+  mmstart:
+  mmretire:
+  mmrecord:
