@@ -14,10 +14,10 @@ public class GameArea {
 
   Location ls;
   Location lg;
-  int X = 6;
-  int Y = 10;
+  int X = 7;
+  int Y = 11;
   int Z = 5;
-  int ZC = 3;
+  int ZC = 2;
 
   /**
    * 以下コンストラクタ
@@ -33,19 +33,6 @@ public class GameArea {
     this.lg = (new Location(w, (int) ls.getX() + X - 1, (int) ls.getY() + Y - 1,
         (int) ls.getZ() + Z - 1));
   }
-
-//  /**
-//   * このエリアにブロックが含まれるか検出するメソッド
-//   *
-//   * @param block 検出するブロックの座標
-//   */
-//  public boolean checkGameArea(Block block) {
-//    Location l = block.getLocation();
-//    return ls.getX() <= l.getX() && l.getX() <= lg.getX()
-//        && ls.getY() <= l.getY() && l.getY() <= lg.getY()
-//        && ls.getZ() <= l.getZ() && l.getZ() <= lg.getZ();
-//  }
-//
 
   /**
    * このモノリススペースエリアにブロックが含まれるか検出するメソッド

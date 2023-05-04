@@ -17,9 +17,11 @@ import plugin.blockbreaker.data.OnPlayData;
 public class EventListener implements Listener {
 
   private final Meta meta;
+  private final Initializer init;
 
-  public EventListener(Meta meta) {
+  public EventListener(Meta meta, Initializer init) {
     this.meta = meta;
+    this.init = init;
   }
 
   /**
@@ -48,11 +50,13 @@ public class EventListener implements Listener {
           if (onPlayData.getChainCount() >= 4) {
             //タッチしたブロックを全て消去
             touchedBlocks.forEach(b -> b.setType(Material.AIR));
+            touchedBlocks.clear();
           }
           e.setCancelled(true);
           //もしリスト登録済のブロックをクリックしたら…
         } else if (touchedBlocks.contains(block)) {
           e.setCancelled(true);
+          //もし違うブロック(リスト未登録)をクリックしたら…
         } else if (!isOnAir(block.getLocation())) {
           onPlayData.setChainCount(1);
           onPlayData.setLastTouchMaterial(block.getType());
@@ -61,7 +65,6 @@ public class EventListener implements Listener {
           touchedBlocks.add(block);
           e.setCancelled(true);
 
-          allBlockGrounder(ga, ls);
         } else if (isOnAir(block.getLocation())) {
           onPlayData.setChainCount(1);
           onPlayData.setLastTouchMaterial(block.getType());
@@ -69,58 +72,12 @@ public class EventListener implements Listener {
           touchedBlockGrounder(ls, block, touchedBlocks);
           e.setCancelled(true);
 
-          allBlockGrounder(ga, ls);
         }
       }
       e.setCancelled(true);
     }
   }
 
-  /**
-   * モノリス内の全ての宙空ブロックを着地させる
-   *
-   * @param ga ゲームエリア
-   * @param ls モノリスエリアの左上のロケーション
-   */
-  private void allBlockGrounder(GameArea ga, Location ls) {
-    int x = ga.getX();
-    int y = ga.getY();
-    int zc = ga.getZC();
-    for (int i = 1; i < x - 1; i++) {
-      for (int j = 0; j < y - 1; j++) {
-        Location l = new Location(ls.getWorld(),
-            ls.getX() + i,
-            ls.getY() + j,
-            ls.getZ() + zc);
-        Block b = l.getBlock();
-
-        blockGrounder(ls, b);
-      }
-    }
-  }
-
-  /**
-   * ブロックを空中から着地させるメソッド
-   *
-   * @param ls ゲームエリアのロケーションの最小値
-   * @param b  着地させるブロック
-   */
-  private void blockGrounder(Location ls, Block b) {
-    Location l = b.getLocation();
-    Location l2 = l.clone();
-    Location l3 = l.clone();
-    int i = 0;
-    while (!b.getType().isAir() && l2.getY() > ls.getY() && isOnAir(l2)) {
-      l2.clone().add(0, -1, 0).getBlock().setType(b.getType());
-      l2.add(0, -1, 0);
-      i++;
-    }
-    while (i > 0) {
-      l3.getBlock().setType(Material.AIR);
-      l3.add(0, -1, 0);
-      i--;
-    }
-  }
 
   /**
    * タッチしたブロックを空中から着地させ　テーブルに保管するメソッド
@@ -155,6 +112,7 @@ public class EventListener implements Listener {
   public boolean isOnAir(Location l) {
     return l.clone().add(0, -1, 0).getBlock().getType().isAir();
   }
+
 
   /**
    * プレイヤーがマインクラフト自体に参加した時にステータスに名前とFALSE、 及びオンプレイデータを作る

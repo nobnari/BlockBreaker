@@ -37,6 +37,8 @@ public class MMStart extends SuperCommand {
       init.glassAirSetter(ga);
       init.monolithSetter(course, ga);
 
+      init.timerStart(player, course);
+
       player.sendMessage("ゲームスタート！");
     } else {
       player.sendMessage("ゲームはすでにはじまっている!!!");

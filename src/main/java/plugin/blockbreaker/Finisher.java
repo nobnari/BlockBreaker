@@ -17,6 +17,17 @@ public class Finisher {
   }
 
   /**
+   * ゲーム終了時の処理
+   *
+   * @param player プレイヤー
+   */
+  public void Finisher(Player player) {
+    blockReset(player);
+    gameModeReset(player);
+//meta.getStatus().put(player.getName(), false);
+  }
+
+  /**
    * ゲーム終了後ブロックを元に戻す
    *
    * @param player 　プレイヤー
