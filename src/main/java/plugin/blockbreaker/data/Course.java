@@ -12,6 +12,8 @@ public class Course {
   public static final String EASY = "easy";
   public static final String NORMAL = "normal";
   public static final String HARD = "hard";
+  public static final String LOG = "log";
+  public static final String LEAVES = "leaves";
 
   private String value;
   private List<String> blockList;
@@ -23,7 +25,7 @@ public class Course {
    */
   public Course(BlockBreaker main, String[] args) {
     if (args.length == 1 && (EASY.equals(args[0]) || NORMAL.equals(args[0]) || HARD.equals(
-        args[0]))) {
+        args[0]) || LOG.equals(args[0]) || LEAVES.equals(args[0]))) {
       this.value = args[0];
     } else {
       this.value = NORMAL;

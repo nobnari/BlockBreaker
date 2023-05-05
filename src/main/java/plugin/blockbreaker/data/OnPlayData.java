@@ -14,7 +14,8 @@ public class OnPlayData {
   Material lastTouchMaterial = Material.CAKE;
   int chainCount;
   List<Block> touchedBlocks = new ArrayList<>();
-
+  int score;
+  boolean gameOver = false;
 
 }
 

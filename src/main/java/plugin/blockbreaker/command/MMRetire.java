@@ -20,13 +20,10 @@ public class MMRetire extends SuperCommand {
   public boolean PlayerDoneCommand(Player player, Command command, String[] args) {
     if (meta.getStatus().get(player.getName())) {
 
-      fini.blockReset(player);
-      fini.gameModeReset(player);
-
+      fini.closer(player);
       meta.getStatus().put(player.getName(), false);
+
       player.sendMessage("ゲームをリタイアしました");
-
-
     } else {
       player.sendMessage("ゲームはまだはじまっていない…");
     }
