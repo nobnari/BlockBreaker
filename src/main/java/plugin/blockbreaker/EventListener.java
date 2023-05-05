@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import plugin.blockbreaker.data.GameArea;
 import plugin.blockbreaker.data.Meta;
 import plugin.blockbreaker.data.OnPlayData;
@@ -17,11 +18,12 @@ import plugin.blockbreaker.data.OnPlayData;
 public class EventListener implements Listener {
 
   private final Meta meta;
-  private final Initializer init;
+  private final Finisher fini;
+  int i = 1;
 
-  public EventListener(Meta meta, Initializer init) {
+  public EventListener(Meta meta, Finisher finisher) {
     this.meta = meta;
-    this.init = init;
+    this.fini = finisher;
   }
 
   /**
@@ -42,42 +44,54 @@ public class EventListener implements Listener {
       //以下ブロックがモノリススペース内にある時の処理
       if (meta.getReserveData().get(player.getName()).getGa().checkMonolithSpace(block)) {
         //もしリスト未登録の同じ種類のブロックをクリックしたら…
-        if (!touchedBlocks.contains(block)
-            && onPlayData.getLastTouchMaterial() == block.getType()) {
-          onPlayData.setChainCount(onPlayData.getChainCount() + 1);
-          touchedBlocks.add(block);
-          //もしチェインカウントが４以上なら…
+        if (onPlayData.getLastTouchMaterial() == block.getType()) {
+          if (!touchedBlocks.contains(block)) {
+            onPlayData.setChainCount(onPlayData.getChainCount() + 1);
+            listRegister(block, touchedBlocks, ls);
+            //もしチェインカウントが４以上なら…
+            if (onPlayData.getChainCount() >= 4) {
+              //ブロックとリストを全消去
+              touchedBlocks.forEach(b -> b.setType(Material.AIR));
+              touchedBlocks.clear();
+              //スコア生成とメッセージ送信
+              int score = onPlayData.getScore() + scoreCalculator(onPlayData.getChainCount());
+              messenger1000(player, score);
+              onPlayData.setScore(score);
+            }
+            e.setCancelled(true);
+            //もしリスト登録済のブロックをクリックしたら…
+          } else {
+            e.setCancelled(true);
+          } //もし違うブロックをクリックしたら…
+        } else {
           if (onPlayData.getChainCount() >= 4) {
-            //タッチしたブロックを全て消去
-            touchedBlocks.forEach(b -> b.setType(Material.AIR));
-            touchedBlocks.clear();
+            player.sendMessage(onPlayData.getChainCount() + " Chain!");
           }
-          e.setCancelled(true);
-          //もしリスト登録済のブロックをクリックしたら…
-        } else if (touchedBlocks.contains(block)) {
-          e.setCancelled(true);
-          //もし違うブロック(リスト未登録)をクリックしたら…
-        } else if (!isOnAir(block.getLocation())) {
           onPlayData.setChainCount(1);
           onPlayData.setLastTouchMaterial(block.getType());
-
           touchedBlocks.clear();
-          touchedBlocks.add(block);
+          listRegister(block, touchedBlocks, ls);
           e.setCancelled(true);
-
-        } else if (isOnAir(block.getLocation())) {
-          onPlayData.setChainCount(1);
-          onPlayData.setLastTouchMaterial(block.getType());
-
-          touchedBlockGrounder(ls, block, touchedBlocks);
-          e.setCancelled(true);
-
         }
       }
       e.setCancelled(true);
     }
   }
 
+  /**
+   * リストに登録する。 宙空のブロックは地上に落として上で登録する
+   *
+   * @param block         　登録するブロック
+   * @param touchedBlocks 　リスト
+   * @param ls            　ゲームエリアのロケーションの最小値
+   */
+  private void listRegister(Block block, List<Block> touchedBlocks, Location ls) {
+    if (isOnAir(block.getLocation())) {
+      touchedBlockGrounder(ls, block, touchedBlocks);
+    } else {
+      touchedBlocks.add(block);
+    }
+  }
 
   /**
    * タッチしたブロックを空中から着地させ　テーブルに保管するメソッド
@@ -95,7 +109,6 @@ public class EventListener implements Listener {
       l2.add(0, -1, 0);
       i++;
     }
-    touchedBlocks.clear();
     touchedBlocks.add(l2.getBlock());
     while (i > 0) {
       l3.getBlock().setType(Material.AIR);
@@ -113,6 +126,36 @@ public class EventListener implements Listener {
     return l.clone().add(0, -1, 0).getBlock().getType().isAir();
   }
 
+  /**
+   * スコア計算機
+   *
+   * @param i 　チェインカウント
+   * @return n 獲得スコア
+   */
+  public int scoreCalculator(int i) {
+    int n = 0;
+    if (i == 4) {
+      n = 100;
+    } else if (i > 4) {
+      n = i * 10;
+    }
+    return n;
+  }
+
+  /**
+   * 1000点ごとにメッセージを送るメソッド
+   *
+   * @param player プレイヤー
+   * @param score  　合計スコア
+   */
+  private void messenger1000(Player player, int score) {
+    if (score >= 1000 * i) {
+      player.sendMessage(1000 * i + "点突破!!!");
+      i++;
+    } else if (score < 1000) {
+      i = 1;
+    }
+  }
 
   /**
    * プレイヤーがマインクラフト自体に参加した時にステータスに名前とFALSE、 及びオンプレイデータを作る
@@ -123,6 +166,16 @@ public class EventListener implements Listener {
   private void onPlayerJoinEvent(PlayerJoinEvent e) {
     meta.getStatus().put(e.getPlayer().getName(), Boolean.FALSE);
     meta.getOnPlayData().put(e.getPlayer().getName(), new OnPlayData());
+  }
+
+  /**
+   * プレイヤーがマインクラフト自体から退出した時にステータスにFALSE、ブロック戻し、 ゲームモード、時間を元に戻す
+   *
+   * @param e プレイヤーquit
+   */
+  @EventHandler
+  private void onPlayerQuitEvent(PlayerQuitEvent e) {
+    fini.closer(e.getPlayer());
   }
 }
 

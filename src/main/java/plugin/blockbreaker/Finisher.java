@@ -16,15 +16,22 @@ public class Finisher {
     this.meta = meta;
   }
 
+  public void clearCloser(Player player) {
+    closer(player);
+    player.sendMessage("ゲーム終了!");
+    player.sendTitle("§6" + meta.getOnPlayData().get(player.getName()).getScore() + "点",
+        "§6" + player.getName(), 10, 80, 40);
+  }
+
   /**
    * ゲーム終了時の処理
    *
    * @param player プレイヤー
    */
-  public void Finisher(Player player) {
+  public void closer(Player player) {
     blockReset(player);
     gameModeReset(player);
-//meta.getStatus().put(player.getName(), false);
+    player.resetPlayerTime();
   }
 
   /**

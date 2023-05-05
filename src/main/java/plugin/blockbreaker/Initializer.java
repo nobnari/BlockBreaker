@@ -3,8 +3,10 @@ package plugin.blockbreaker;
 import java.util.List;
 import java.util.SplittableRandom;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import plugin.blockbreaker.data.Course;
@@ -36,18 +38,38 @@ public class Initializer {
     GameArea ga = meta.getReserveData().get(player.getName()).getGa();
     Bukkit.getScheduler().runTaskTimer(main,
         run -> {
-          if (!meta.getStatus().get(player.getName())) {
+          if (meta.getOnPlayData().get(player.getName()).isGameOver()) {
             run.cancel();
-            fini.Finisher(player);
+            glassBreak(player);
+            fini.clearCloser(player);
+            meta.getOnPlayData().get(player.getName()).setGameOver(false);
+            meta.getStatus().put(player.getName(), false);
+            return;
+          } else if (!meta.getStatus().get(player.getName())) {
+            run.cancel();
+            fini.closer(player);
             return;
           }
-          randomBlockGenerator(player, course);
+          //↓↓ゲームオーバーフラグ内包
+          randomBlockGenerator(ga, player, course);
+          //↓↓落下ディレイタイマー
           Bukkit.getScheduler().scheduleSyncDelayedTask(main,
-              () -> {
-                allBlockGrounder(ga, ga.getLs());
-              }, 10);
+              () -> allBlockGrounder(ga, ga.getLs()), 15);
 
         }, 0, 20);
+  }
+
+
+  /**
+   * ゲームスタート時のセットアップ スコア０、最後に触ったブロックをケーキに、ゲームモードをクリエイティブに設定
+   *
+   * @param player 　プレイヤー
+   */
+  public void setUpper(Player player) {
+    meta.getOnPlayData().get(player.getName()).setLastTouchMaterial(Material.CAKE);
+    meta.getOnPlayData().get(player.getName()).setScore(0);
+    player.setGameMode(GameMode.CREATIVE);
+    player.setPlayerTime(6000, false);
   }
 
   /**
@@ -106,16 +128,21 @@ public class Initializer {
   }
 
   /**
-   * モノリス最上段(X値ランダム)に コースに依存したランダムな種類のブロックを生成
+   * （★★★ゲームオーバー判定あり★★★） モノリス最上段(X値ランダム)に コースに依存したランダムな種類のブロックを生成。 ロケーションに空気が無い場合、窒息してゲームオーバー。
    *
    * @param player プレイヤー
    * @param course 難易度
    */
-  private void randomBlockGenerator(Player player, Course course) {
-    Location l = randomLocationGen(player);
+  private void randomBlockGenerator(GameArea ga, Player player, Course course) {
+    Location lr = randomLocationGen(player);
     Material m = randomMaterialGen(course);
-    l.getBlock().setType(m);
+    if (lr.getBlock().getType().isAir()) {
+      lr.getBlock().setType(m);
+    } else {
+      meta.getOnPlayData().get(player.getName()).setGameOver(true);
+    }
   }
+
 
   /**
    * モノリス最上段にX値がランダムのロケーションを返す。
@@ -134,7 +161,7 @@ public class Initializer {
   }
 
   /**
-   * config.yml 内の リストからランダムでマテリアルを一種選んで返す。
+   * 難易度別にランダムにブロック選択し１箇所に設置するメソッド
    *
    * @param course 　難易度
    * @return material
@@ -186,24 +213,22 @@ public class Initializer {
       for (int j = 0; j < y - 1; j++) {
         Location l = new Location(ls.getWorld(), ls.getX() + i, ls.getY() + j,
             ls.getZ() + zc);
-        randomBlockSetter(course, l);
+        l.getBlock().setType(randomMaterialGen(course));
       }
     }
   }
 
   /**
-   * 難易度別にランダムにブロック選択し１箇所に設置するメソッド
+   * ガラスの壊れる音を数回連続で再生するメソッド
    *
-   * @param course 難易度
-   * @param l      　設置する場所
+   * @param player プレイヤー
    */
-  private void randomBlockSetter(Course course, Location l) {
-    List<String> blockList = course.getBlockList();
-    int random = new SplittableRandom().nextInt(blockList.size());
-    Material material = Material.valueOf(blockList.get(random));
-    l.getBlock().setType(material);
+  public void glassBreak(Player player) {
+    for (int i = 0; i < 7; i++) {
+      Bukkit.getScheduler().scheduleSyncDelayedTask(main,
+          () -> player.playSound(player.getLocation(), Sound.BLOCK_GLASS_BREAK, 15, 35),
+          i * 2);
+    }
   }
-
-
 }
 
