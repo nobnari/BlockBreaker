@@ -7,6 +7,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.WeatherType;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import plugin.blockbreaker.data.Course;
@@ -19,7 +20,6 @@ public class Initializer {
   Meta meta;
   Finisher fini;
 
-
   public Initializer(BlockBreaker main, Meta meta, Finisher fini) {
     this.main = main;
     this.meta = meta;
@@ -28,7 +28,7 @@ public class Initializer {
 
 
   /**
-   * 一定間隔でモノリス最上段(X値ランダム)に コースに依存したランダムな種類のブロックを生成し, さらに10ティック後にそのブロックを着地させる。
+   * 一定間隔でモノリス最上段(X値ランダム)に コースに依存したランダムな種類のブロックを生成し, さらに15ティック後にそのブロックを着地させる。
    * プレイヤーステータスがfalseになったら終了。
    *
    * @param player プレイヤー
@@ -51,14 +51,12 @@ public class Initializer {
             return;
           }
           //↓↓ゲームオーバーフラグ内包
-          randomBlockGenerator(ga, player, course);
+          randomBlockGenerator(player, course);
           //↓↓落下ディレイタイマー
           Bukkit.getScheduler().scheduleSyncDelayedTask(main,
               () -> allBlockGrounder(ga, ga.getLs()), 15);
-
         }, 0, 20);
   }
-
 
   /**
    * ゲームスタート時のセットアップ スコア０、最後に触ったブロックをケーキに、ゲームモードをクリエイティブに設定
@@ -70,6 +68,7 @@ public class Initializer {
     meta.getOnPlayData().get(player.getName()).setScore(0);
     player.setGameMode(GameMode.CREATIVE);
     player.setPlayerTime(6000, false);
+    player.setPlayerWeather(WeatherType.CLEAR);
   }
 
   /**
@@ -133,7 +132,7 @@ public class Initializer {
    * @param player プレイヤー
    * @param course 難易度
    */
-  private void randomBlockGenerator(GameArea ga, Player player, Course course) {
+  private void randomBlockGenerator(Player player, Course course) {
     Location lr = randomLocationGen(player);
     Material m = randomMaterialGen(course);
     if (lr.getBlock().getType().isAir()) {
@@ -207,7 +206,7 @@ public class Initializer {
   public void monolithSetter(Course course, GameArea ga) {
     Location ls = ga.getLs();
     int x = ga.getX();
-    int y = ga.getY() - 4;
+    int y = ga.getY() - 5;
     int zc = ga.getZC();
     for (int i = 1; i < x - 1; i++) {
       for (int j = 0; j < y - 1; j++) {
