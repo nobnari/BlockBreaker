@@ -55,8 +55,8 @@ public class EventListener implements Listener {
               touchedBlocks.clear();
               //スコア生成とメッセージ送信
               int score = onPlayData.getScore() + scoreCalculator(onPlayData.getChainCount());
-              messenger1000(player, score);
               onPlayData.setScore(score);
+              messenger1000(player, score);
             }
             e.setCancelled(true);
             //もしリスト登録済のブロックをクリックしたら…

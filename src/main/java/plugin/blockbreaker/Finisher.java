@@ -5,12 +5,14 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import plugin.blockbreaker.DAO.Connector;
 import plugin.blockbreaker.data.GameArea;
 import plugin.blockbreaker.data.Meta;
 
 public class Finisher {
 
   Meta meta;
+  Connector con = new Connector();
 
   public Finisher(Meta meta) {
     this.meta = meta;
@@ -20,7 +22,10 @@ public class Finisher {
     closer(player);
     player.sendMessage("ゲーム終了!");
     player.sendTitle("§6" + meta.getOnPlayData().get(player.getName()).getScore() + "点",
-        "§6" + player.getName(), 10, 80, 40);
+        "§6" + meta.getReserveData().get(player.getName()).getSelectedCourse().getValue(),
+        10, 80, 40);
+    con.insertMMScore(player, meta.getOnPlayData().get(player.getName()).getScore(),
+        meta.getReserveData().get(player.getName()).getSelectedCourse().getValue());
   }
 
   /**
@@ -32,6 +37,7 @@ public class Finisher {
     blockReset(player);
     gameModeReset(player);
     player.resetPlayerTime();
+    player.resetPlayerWeather();
   }
 
   /**

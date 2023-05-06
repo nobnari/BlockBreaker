@@ -27,9 +27,6 @@ public class MMRetire extends SuperCommand {
     } else {
       player.sendMessage("ゲームはまだはじまっていない…");
     }
-
     return false;
   }
-
-
 }
