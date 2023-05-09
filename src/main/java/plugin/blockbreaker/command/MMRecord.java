@@ -29,6 +29,8 @@ public class MMRecord extends SuperCommand {
         con.displayScores(player, args[0]);
       } else if (RECENT.equals(args[0])) {
         con.displayRecent(player);
+      } else {
+        con.displayScores(player);
       }
     } else {
       con.displayScores(player);

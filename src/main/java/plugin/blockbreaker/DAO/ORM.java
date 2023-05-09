@@ -23,7 +23,7 @@ public interface ORM {
   List<MMScore> getCourseRank(String courseValue);
 
   /**
-   * MMスコアテーブルから最近の日時順に最6人分のデータを取得
+   * MMスコアテーブルから最近の日時順に最大5人分のデータを取得
    *
    * @return MMスコアテーブルの最近のデータ
    */

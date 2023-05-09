@@ -14,7 +14,7 @@ public final class BlockBreaker extends JavaPlugin {
     saveDefaultConfig();
 
     Meta meta = new Meta();
-    Finisher fini = new Finisher(meta);
+    Finisher fini = new Finisher(this, meta);
     Initializer init = new Initializer(this, meta, fini);
 
     Bukkit.getPluginManager().registerEvents(new EventListener(meta, fini), this);
